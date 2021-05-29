@@ -35,7 +35,7 @@ toDoRouter.post("/", (req, res) => {
   // We want to allow the default non-null value for importance_rank.
   // If importance_rank is not on the body, we don't want to insert with null.
   // The database will only use the default if importance_rank is not defined in our query.
-  const hasImportance = req.body.hasOwnProperty('importanceRank');
+  const hasImportance = req.body.hasOwnProperty('importance_rank');
   const queryText = `INSERT INTO "ToDo" 
     ("task", "complete", "date_completed", "notes"${hasImportance ? ', "importance_rank"' : ''}) 
     VALUES 
@@ -56,7 +56,7 @@ toDoRouter.post("/", (req, res) => {
   ];
 
   if (hasImportance) {
-    values.push(req.body.importanceRank);
+    values.push(req.body.importance_rank);
   }
 
   pool
@@ -73,17 +73,39 @@ toDoRouter.post("/", (req, res) => {
 // edit task input , complete yes no date completed is timestamp ' 'notes edit notes' adjust important rank, delete row , 
 // PUT⬇
 
+/**
+ * Update each of our value arrays needed for the PUT request
+ * 
+ * @param prop the property to check for and update in each array
+ * @param body the request body
+ * @param values the array of values to update
+ * @param valueStrings the array of SQL strings to update
+ */
+function updateValues(prop, body, values, valueStrings) {
+  // ⬇ Confirm property exists
+  const hasProp = body.hasOwnProperty(prop);
+  if (hasProp) {
+    // ⬇ Add our value to the values array
+    values.push(body[prop]);
+    // ⬇ Add our value string (SET) to the valueStrings array
+    // The current length of values after each push will always reflect the appropriate prepared index ($1, $2, $3... etc.)
+    valueStrings.push(`${prop} = $${values.length}`);
+  }
+}
+
 toDoRouter.put('/:id', (req, res) => {
   console.log(req.body);
 
   // ⬇ Get the id of the ToDo we want to update
   const id = req.params.id;
-
-  // ⬇ Prepare our values and value strings arrays
   const values = [];
   const valueStrings = [];
+
+  updateValues('notes', req.body, values, valueStrings);
+  updateValues('task', req.body, values, valueStrings);
+  updateValues('importance_rank', req.body, values, valueStrings);
   
-  // ⬇ Check whether the user has passed 'complete' on the request body
+  // ⬇ Special case, we need to modify date if complete status changes
   const hasComplete = req.body.hasOwnProperty('complete');
   if (hasComplete) {
     // ⬇ If the value was false, clear date completed
@@ -95,38 +117,17 @@ toDoRouter.put('/:id', (req, res) => {
       dateCompleted = new Date();
     }
 
-    // ⬇ Add our complete value to the values array
     values.push(complete);
-    // ⬇ Add our value string (SET) to the valueStrings array
-    // The current length of values after each push will always reflect the appropriate prepared index ($1, $2, $3... etc.)
     valueStrings.push(`complete = $${values.length}`);
     values.push(dateCompleted);
-    // ⬇ Add our value string (SET) to the valueStrings array
     valueStrings.push(`date_completed = $${values.length}`);
   }
 
-  const hasNotes = req.body.hasOwnProperty('notes');
-  if (hasNotes) {
-    // ⬇ Add our complete value to the values array
-    values.push(req.body.notes);
-    // ⬇ Add our value string (SET) to the valueStrings array
-    // If the first case was not met, the length will be 1. If it was met, it will be 3!
-    valueStrings.push(`notes = $${values.length}`);
-  }
-
-  const hasImportance = req.body.hasOwnProperty('importanceRank');
-  if (hasImportance) {
-    // ⬇ Add our complete value to the values array
-    values.push(req.body.importanceRank);
-    // ⬇ Add our value string (SET) to the valueStrings array
-    valueStrings.push(`importance_rank = $${values.length}`);
-  }
-
+  // Make sure we have something to update!
   if (values.length === 0) {
     res.status(400).send('Requires at least one updatable property');
   }
 
-  // Finally, our last value for our prepared statement is the id added here
   values.push(id);
   const queryText = `UPDATE "ToDo" 
     SET ${valueStrings.join(', ')}
@@ -159,6 +160,3 @@ toDoRouter.delete('/:id', (req, res) => {
 
 module.exports = toDoRouter;
 
-// ("task","created", "complete", "date_completed", "notes", "importance_rank") 
-    // VALUES 
-    // ($1, $2, $3, $4, $5 ,$6);`;
