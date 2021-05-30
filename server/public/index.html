@@ -11,15 +11,67 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
        <script src="./vendors/jQuery.js"></script>
-        <script src="scripts/client.js"></script>
-        <link rel="stylesheet" href="style.css">
+        <script src="./vendors/bootstrap.bundle.js"></script>
+       <script src="scripts/client.js"></script>
+        <link rel="stylesheet" href="./styles/style.css">
         <link rel="stylesheet" href="vendors/bootstrap.css">
     </head>
     <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-        
-        <script src="" async defer></script>
+        <header>
+        <div class='container header'>
+            <div class="p-5 mb-4 bg-light rounded-3">
+              <div class="container d-flex py-5 justify-content-center">
+                <h1 class="display-5 fw-bold">"To Do List"</h1>
+              </div>
+            </div>
+        </header>
+        <div class = "wrapper">
+        <form class = "hr-class">
+        <section id ="addToDo">
+            <h2>To Do </h2>
+            <input class="btn btn-outline-primary" type ="text"  id="taskIn" value="" placeholder="Task">
+            <input class="btn btn-outline-warning" type ="text" id="createdIn" value="" placeholder="Created">
+            <input class="btn btn-outline-success" type ="text" id="completedIn" value="" placeholder="Completed">
+            <input class="btn btn-outline-info"type ="text" id="notesIn" value="" placeholder="Notes">
+            <input class="btn btn-outline-secondary" type ="text" id="dateCompleted" value="" placeholder="Date Completed">
+            <div class = "dropDown">
+                <button class="btn btn-outline-danger dropdown-toggle" type ="button" id="importanceIn"  data-toggle="dropdown">Importance</button>
+                    <div class = 'dropdown-menu'>
+                    <option class="dropdown-item" href="#">Unimportant</option>
+                    <option class="dropdown-item" href="#">Minor</option>
+                    <option class="dropdown-item" href="#">Neutral</option>
+                    <option class="dropdown-divider"></option>
+                    <option class="dropdown-item" href="#">Priority</option>
+                    <option class="dropdown-item" href="#">Super Priority</option>
+                    <option class="dropdown-divider"></option>
+                    <option class="dropdown-item" href="#">Threat Level Midnight</option>
+                    </div> 
+                
+            </div>
+            <button  type="button" class="btn btn-deep-orange" id="addButton" >Add Task</button>
+        </section>
+        </form>
+        <section class="tablebox">
+            <h3>The List</h3>
+            <table class="todoTable">
+              <thead>
+                <tr>
+                  <th class="th-c">Task</th>
+                  <th class="th-c">Created</th>
+                  <th class="th-c">Completed</th>
+                  <th class="th-c">Notes</th>
+                  <th class="th-c">Date Completed</th>
+                  <th class="th-c">Importance</th>
+                  <th>   </th>
+                  <th>   </th>
+                </tr>
+              </thead>
+              <tbody id="viewToDo">
+              </tbody>
+            </table>
+          </section>
+    
+    
+        </div>  
     </body>
 </html>

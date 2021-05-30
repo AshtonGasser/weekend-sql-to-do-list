@@ -28,32 +28,29 @@ toDoRouter.get("/", (req, res) => {
 
 toDoRouter.post("/", (req, res) => {
   console.log(req.body);
-  if (!req.body.task){
-    res.status(400).send('task is required!!')
+  if (!req.body.task) {
+    res.status(400).send("task is required!!");
   }
-    
+
   // We want to allow the default non-null value for importance_rank.
   // If importance_rank is not on the body, we don't want to insert with null.
   // The database will only use the default if importance_rank is not defined in our query.
-  const hasImportance = req.body.hasOwnProperty('importance_rank');
+  const hasImportance = req.body.hasOwnProperty("importance_rank");
   const queryText = `INSERT INTO "ToDo" 
-    ("task", "complete", "date_completed", "notes"${hasImportance ? ', "importance_rank"' : ''}) 
+    ("task", "complete", "date_completed", "notes"${
+      hasImportance ? ', "importance_rank"' : ""
+    }) 
     VALUES 
-    ($1, $2, $3, $4${hasImportance ? ', $5' : ''})`;
+    ($1, $2, $3, $4${hasImportance ? ", $5" : ""})`;
 
   let complete = false;
   let dateCompleted = null;
-  if (req.body.complete && req.body.complete !== 'false') {
+  if (req.body.complete && req.body.complete !== "false") {
     complete = true;
     dateCompleted = new Date();
   }
 
-  const values = [
-    req.body.task,
-    complete, 
-    dateCompleted,
-    req.body.notes,
-  ];
+  const values = [req.body.task, complete, dateCompleted, req.body.notes];
 
   if (hasImportance) {
     values.push(req.body.importance_rank);
@@ -70,12 +67,12 @@ toDoRouter.post("/", (req, res) => {
       res.sendStatus(500);
     });
 });
-// edit task input , complete yes no date completed is timestamp ' 'notes edit notes' adjust important rank, delete row , 
+// edit task input , complete yes no date completed is timestamp ' 'notes edit notes' adjust important rank, delete row ,
 // PUT⬇
 
 /**
  * Update each of our value arrays needed for the PUT request
- * 
+ *
  * @param prop the property to check for and update in each array
  * @param body the request body
  * @param values the array of values to update
@@ -93,7 +90,7 @@ function updateValues(prop, body, values, valueStrings) {
   }
 }
 
-toDoRouter.put('/:id', (req, res) => {
+toDoRouter.put("/:id", (req, res) => {
   console.log(req.body);
 
   // ⬇ Get the id of the ToDo we want to update
@@ -101,17 +98,17 @@ toDoRouter.put('/:id', (req, res) => {
   const values = [];
   const valueStrings = [];
 
-  updateValues('notes', req.body, values, valueStrings);
-  updateValues('task', req.body, values, valueStrings);
-  updateValues('importance_rank', req.body, values, valueStrings);
-  
-  // ⬇ Special case, we need to modify date if complete status changes
-  const hasComplete = req.body.hasOwnProperty('complete');
+  updateValues("notes", req.body, values, valueStrings);
+  updateValues("task", req.body, values, valueStrings);
+  updateValues("importance_rank", req.body, values, valueStrings);
+
+  // ⬇ Special case, to modify date if complete status changes
+  const hasComplete = req.body.hasOwnProperty("complete");
   if (hasComplete) {
     // ⬇ If the value was false, clear date completed
     let complete = false;
     let dateCompleted = null;
-    if (req.body.complete && req.body.complete !== 'false') {
+    if (req.body.complete && req.body.complete !== "false") {
       // ⬇ If the value was true, set dateCompleted
       complete = true;
       dateCompleted = new Date();
@@ -125,12 +122,12 @@ toDoRouter.put('/:id', (req, res) => {
 
   // Make sure we have something to update!
   if (values.length === 0) {
-    res.status(400).send('Requires at least one updatable property');
+    res.status(400).send("Requires at least one updatable property");
   }
 
   values.push(id);
   const queryText = `UPDATE "ToDo" 
-    SET ${valueStrings.join(', ')}
+    SET ${valueStrings.join(", ")}
     WHERE id = $${values.length}`;
 
   pool
@@ -139,24 +136,25 @@ toDoRouter.put('/:id', (req, res) => {
       res.sendStatus(201);
     })
     .catch((err) => {
-      console.log('ya done goofed', err);
+      console.log("ya done goofed", err);
       res.sendStatus(500);
     });
 });
 
 // DELETE⬇
-toDoRouter.delete('/:id', (req, res) => {
-    const itemToDelete = req.params.id;
-    const queryText = `DELETE FROM "ToDo" WHERE "ToDo".id = $1`;
-    pool.query(queryText, [itemToDelete])
+toDoRouter.delete("/:id", (req, res) => {
+  const itemToDelete = req.params.id;
+  const queryText = `DELETE FROM "ToDo" WHERE "ToDo".id = $1`;
+  pool
+    .query(queryText, [itemToDelete])
     .then((response) => {
-        console.log(`we deleted the todo with id ${itemToDelete}`);
-        res.send(200);
-    }).catch((err) => {
-        console.log('something went wrong in toDoRouter.delete', err);
-        res.sendStatus(500)
+      console.log(`we deleted the todo with id ${itemToDelete}`);
+      res.send(200);
+    })
+    .catch((err) => {
+      console.log("something went wrong in toDoRouter.delete", err);
+      res.sendStatus(500);
     });
-});//end toDo/Router.delete
+}); //end toDo/Router.delete
 
 module.exports = toDoRouter;
-

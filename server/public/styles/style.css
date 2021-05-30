@@ -1,0 +1,41 @@
+
+#addToDo{
+   display: flex; 
+   margin: 1em;
+}
+.hr-class {
+    border-top: 20px;
+   }
+
+   .wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .wrapper > * {
+    padding: 20px;
+  }
+
+body {
+    text-align: center;
+    margin: 0 auto;
+  }
+  
+.tablebox{
+    margin: 2em;
+}
+
+.th-c {
+    font-size: larger;
+    padding: 2em;
+    text-decoration: underline;
+}
+
+th {
+    
+    font-size: large;
+}
+
+.todoTable{
+    text-align: center;
+}
