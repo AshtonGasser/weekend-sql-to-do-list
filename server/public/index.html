@@ -13,6 +13,7 @@
        <script src="./vendors/jQuery.js"></script>
         <script src="./vendors/bootstrap.bundle.js"></script>
        <script src="scripts/client.js"></script>
+       <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <link rel="stylesheet" href="vendors/bootstrap.css">
         <link rel="stylesheet" href="./styles/style.css">
 
@@ -32,7 +33,7 @@
             <h2>To Do </h2>
             <input class="btn btn-outline-primary" type ="text"  id="taskIn" placeholder="Task" />
             <input class="btn btn-outline-warning" type ="text" id="createdIn" value="" placeholder="Created" />
-            <input class="btn btn-outline-success" type ="text" id="completeIn" value="" placeholder="Completed" />
+            <input class="btn btn-outline-success" type ="checkbox" id="completeIn" value="" placeholder="Completed" />
             <input class="btn btn-outline-info"type ="text" id="notesIn" value="" placeholder="Notes" />
             <input class="btn btn-outline-secondary" name="completed" type ="date" id="dateCompleted" value="" placeholder="Date Completed"/>
             <select class="form-select btn-outline-danger" style="width:10em" id="importanceIn">
