@@ -13,8 +13,9 @@
        <script src="./vendors/jQuery.js"></script>
         <script src="./vendors/bootstrap.bundle.js"></script>
        <script src="scripts/client.js"></script>
-        <link rel="stylesheet" href="./styles/style.css">
         <link rel="stylesheet" href="vendors/bootstrap.css">
+        <link rel="stylesheet" href="./styles/style.css">
+
     </head>
     <body>
         <header>
@@ -25,45 +26,38 @@
               </div>
             </div>
         </header>
-        <div class = "wrapper">
+        <div class = "wrapper justify-content-center">
         <form class = "hr-class">
-        <section id ="addToDo">
+        <section id ="addToDo" class="justify-content-between">
             <h2>To Do </h2>
-            <input class="btn btn-outline-primary" type ="text"  id="taskIn" value="" placeholder="Task">
-            <input class="btn btn-outline-warning" type ="text" id="createdIn" value="" placeholder="Created">
-            <input class="btn btn-outline-success" type ="text" id="completedIn" value="" placeholder="Completed">
-            <input class="btn btn-outline-info"type ="text" id="notesIn" value="" placeholder="Notes">
-            <input class="btn btn-outline-secondary" type ="text" id="dateCompleted" value="" placeholder="Date Completed">
-            <div class = "dropDown">
-                <button class="btn btn-outline-danger dropdown-toggle" type ="button" id="importanceIn"  data-toggle="dropdown">Importance</button>
-                    <div class = 'dropdown-menu'>
-                    <option class="dropdown-item" href="#">Unimportant</option>
-                    <option class="dropdown-item" href="#">Minor</option>
-                    <option class="dropdown-item" href="#">Neutral</option>
-                    <option class="dropdown-divider"></option>
-                    <option class="dropdown-item" href="#">Priority</option>
-                    <option class="dropdown-item" href="#">Super Priority</option>
-                    <option class="dropdown-divider"></option>
-                    <option class="dropdown-item" href="#">Threat Level Midnight</option>
-                    </div> 
-                
-            </div>
-            <button  type="button" class="btn btn-deep-orange" id="addButton" >Add Task</button>
+            <input class="btn btn-outline-primary" type ="text"  id="taskIn" placeholder="Task" />
+            <input class="btn btn-outline-warning" type ="text" id="createdIn" value="" placeholder="Created" />
+            <input class="btn btn-outline-success" type ="text" id="completeIn" value="" placeholder="Completed" />
+            <input class="btn btn-outline-info"type ="text" id="notesIn" value="" placeholder="Notes" />
+            <input class="btn btn-outline-secondary" name="completed" type ="date" id="dateCompleted" value="Date Completed" placeholder="Date Completed"/>
+            <select class="form-select btn-outline-danger" style="width:10em" id="importanceIn">
+                <option selected>Importance</option>
+                <option class="dropdown-item" value="unimportant">Unimportant</option>
+                <option class="dropdown-item" value="minor">Minor</option>
+                <option class="dropdown-item" value="neutral">Neutral</option>
+                <option class="dropdown-item" value="priority">Priority</option>
+                <option class="dropdown-item" value="super priority">Super Priority</option>
+                <option class="dropdown-item" value="threat level midnight">Threat Level Midnight</option>
+            </select>
+            <button  type="button" class="btn deep-orange" id="addButton" >Add Task</button>
         </section>
         </form>
-        <section class="tablebox">
+        <section class="tablebox justify-content-center">
             <h3>The List</h3>
-            <table class="todoTable">
+            <table class="todoTable w-100">
               <thead>
                 <tr>
                   <th class="th-c">Task</th>
                   <th class="th-c">Created</th>
-                  <th class="th-c">Completed</th>
-                  <th class="th-c">Notes</th>
+                  <th class="th-c">Complete</th>
                   <th class="th-c">Date Completed</th>
+                  <th class="th-c">Notes</th>
                   <th class="th-c">Importance</th>
-                  <th>   </th>
-                  <th>   </th>
                 </tr>
               </thead>
               <tbody id="viewToDo">
