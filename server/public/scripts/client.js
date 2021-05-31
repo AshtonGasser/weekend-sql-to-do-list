@@ -1,4 +1,5 @@
 console.log( 'js')
+let todos = [];
 
 $( document ).ready( function(){
     console.log( 'JQ' );
@@ -20,35 +21,58 @@ setupClickListeners()
     //   return; 
 
 function setupClickListeners(){
-console.log('shhh! we are listening for clicks.');
-$("#viewToDo").on('click', '.deleteBtn', deleteTodoHandler) 
-$(".dropdown-toggle" ).dropdown ()  
-$( '#addButton' ).on( 'click', saveTodoList)
-$("#viewToDo").on('click', '.saveBtn', updateToDoHandler)
+  console.log('shhh! we are listening for clicks.');
+  $("#viewToDo").on('click', '.saveBtn', updateToDoHandler)
+  $("#viewToDo").on('click', '.deleteBtn', deleteTodoHandler) 
+  $(".dropdown-toggle" ).dropdown ()  
+  $( '#addButton' ).on( 'click', saveTodoList)
    
-$("#completeIn").on('change', function() {
-  if ($(this).is(':checked')) {
-        $(this).attr('value', 'true');
-  } else {
-    $(this).attr('value', 'false');
-  }
-});
-
+  $("#completeIn").on('change', function() {
+    if ($(this).is(':checked')) {
+          $(this).attr('value', 'true');
+    } else {
+      $(this).attr('value', 'false');
+    }
+  });
 }
 
-function getToDoList(){
-    console.log( 'in get todo list');
-//⬇ ajax call to server to get todo
-$.ajax({
-    method: 'GET',
-    url: '/todo'
-}).then(function (response) {
-  console.log(response);
-  renderTodo(response);
-}).catch(function(error) {
-  console.log('error in GET on client.js', error);
-});  
+function getToDoList() {
+  console.log( 'in get todo list');
+  //⬇ ajax call to server to get todo
+  $.ajax({
+      method: 'GET',
+      url: '/todo'
+  }).then(function (response) {
+    console.log(response);
+    todos = response;
+    renderTodo(todos);
+  }).catch(function(error) {
+    console.log('error in GET on client.js', error);
+  });  
+} // end getTodoList
+
+function getToDo(id) {
+  console.log( 'in get todo');
+  //⬇ ajax call to server to get todo
+  $.ajax({
+      method: 'GET',
+      url: `/todo/${id}`
+  }).then(function (response) {
+    let index = todos.findIndex((todo) => todo.id === id);
+    todos.splice(index, 1, response);
+    renderTodo(todos);
+    // renderSingleTodo
+  }).catch(function(error) {
+    console.log('error in GET on client.js', error);
+  });  
 } // end getTodo
+
+
+function renderSingleTodo() {
+  // find old todo in DOM using jquery
+  // create new todo elment
+  // replace old DOM element with new element
+}
 
 function renderTodo(todo){
     $('#viewToDo').empty();
@@ -94,7 +118,10 @@ function renderTodo(todo){
              completed = `<td><input type="checkbox" id="completed${todo[i].id}" value="${todo[i].complete}"></input></td>`
         }
         let created = moment(todo[i].created).format(('MMMM Do, YYYY'))
-        let completedDate = moment(todo[i].date_completed).format(('MMMM Do, YYYY'));
+        let completedDate = "";
+        if (todo[i].date_completed) {
+          completedDate = moment(todo[i].date_completed).format(('MMMM Do, YYYY'));
+        }
         let todoHTML = `
         <tr>
           <td>${todo[i].task}</td>
@@ -108,8 +135,8 @@ function renderTodo(todo){
           <button class="deleteBtn btn btn-danger" data-id="${todo[i].id}">Delete</button>
           </td>
         </tr>`
-
-        $(`completed${todo[i].id}`).on('change', function() {
+            //fuck with this, not the other one. that one works
+        $(`#completed${todo[i].id}`).on('change', function() {
             if ($(this).is(':checked')) {
                   $(this).attr('value', 'true');
             } else {
@@ -125,17 +152,18 @@ function renderTodo(todo){
 
 
 function saveTodoList(){
-    // ajax call to server to get todo
-
-    let completed = $('#completeIn').val() ? $('#completeIn').val() : false;
-    let newTodo = {
-        task: $('#taskIn').val(),
-        complete: completed,
-        dateCompleted: $('#dateCompletedIn').val(),
-        notes: $('#notesIn').val(),
-        importance_rank: $('#importanceIn').val()
-
+  // ajax call to server to get todo
+  console.log($('#completeIn').val());
+  let completed = $('#completeIn').val() ? $('#completeIn').val() : false;
+  console.log(completed);
+  let newTodo = {
+    task: $('#taskIn').val(),
+    complete: completed,
+    dateCompleted: $('#dateCompletedIn').val(),
+    notes: $('#notesIn').val(),
+    importance_rank: $('#importanceIn').val()
   }; 
+  
   console.log( ' saveTodoList', newTodo );   
     $.ajax({
       type: 'POST',
@@ -157,8 +185,8 @@ function updateToDoHandler(){
     let id = $(this).data("id");
     let notes = `todoNotes${id}`
     let complete = `completed${id}`
-    console.log($(`#${complete}`).val(), $(`#${notes}`).val())
-    updateTodo(id, $(`#${complete}`).val(), $(`#${notes}`).val()) 
+    console.log($(`#${complete}`).prop('checked'), $(`#${notes}`).val())
+    updateTodo(id, $(`#${complete}`).prop('checked'), $(`#${notes}`).val()) 
 }
 
 function updateTodo(todoId, complete, notes){
@@ -174,12 +202,12 @@ function updateTodo(todoId, complete, notes){
         })
         .then(response => {
           console.log(response)
-          getToDoList()
+          getToDo(todoId);
         })
         .catch(err => {
           console.log(err);
         });
-      }
+}
 
   function deleteTodoHandler(){
     deleteTodo($(this).data("id")) 

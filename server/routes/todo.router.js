@@ -24,6 +24,26 @@ toDoRouter.get("/", (req, res) => {
     });
 });
 
+// GET BY ID ⬇
+
+toDoRouter.get("/:id", (req, res) => {
+  let queryText = 'SELECT * FROM "ToDo" WHERE id = $1;';
+  pool
+    .query(queryText, [req.params.id])
+    .then((result) => {
+      // Sends back the results in an object
+      if (result.rows) {
+        res.send(result.rows[0]);
+      } else {
+        res.send(result.rows);
+      }
+    })
+    .catch((error) => {
+      console.log("error getting ToDo List id " + req.param.id, error);
+      res.sendStatus(500);
+    });
+});
+
 // POST⬇
 
 toDoRouter.post("/", (req, res) => {
@@ -45,7 +65,7 @@ toDoRouter.post("/", (req, res) => {
 
   let complete = false;
   let dateCompleted = null;
-  if (req.body.complete) {
+  if (req.body.complete && req.body.complete !== "false") {
     complete = true;
     dateCompleted = req.body.dateCompleted ? req.body.dateCompleted : new Date();
   }
@@ -104,16 +124,19 @@ toDoRouter.put("/:id", (req, res) => {
 
   // ⬇ Special case, to modify date if complete status changes
   const hasComplete = req.body.hasOwnProperty("complete");
+  console.log("hasComplete: " + hasComplete);
   if (hasComplete) {
     // ⬇ If the value was false, clear date completed
     let complete = false;
     let dateCompleted = null;
     if (req.body.complete && req.body.complete !== "false") {
       // ⬇ If the value was true, set dateCompleted
+      console.log("complete is true");
       complete = true;
       dateCompleted = new Date();
     }
 
+    console.log("adding values");
     values.push(complete);
     valueStrings.push(`complete = $${values.length}`);
     values.push(dateCompleted);
@@ -129,6 +152,9 @@ toDoRouter.put("/:id", (req, res) => {
   const queryText = `UPDATE "ToDo" 
     SET ${valueStrings.join(", ")}
     WHERE id = $${values.length}`;
+
+  console.log("final query: " + queryText);
+  console.log(values);
 
   pool
     .query(queryText, values)
