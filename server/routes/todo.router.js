@@ -45,9 +45,9 @@ toDoRouter.post("/", (req, res) => {
 
   let complete = false;
   let dateCompleted = null;
-  if (req.body.complete && req.body.complete !== "false") {
+  if (req.body.complete) {
     complete = true;
-    dateCompleted = new Date();
+    dateCompleted = req.body.dateCompleted ? req.body.dateCompleted : new Date();
   }
 
   const values = [req.body.task, complete, dateCompleted, req.body.notes];
