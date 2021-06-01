@@ -135,7 +135,7 @@ function renderTodo(todo){
           <button class="deleteBtn btn btn-danger" data-id="${todo[i].id}">Delete</button>
           </td>
         </tr>`
-            //fuck with this, not the other one. that one works
+            
         $(`#completed${todo[i].id}`).on('change', function() {
             if ($(this).is(':checked')) {
                   $(this).attr('value', 'true');
@@ -213,7 +213,7 @@ function updateTodo(todoId, complete, notes){
     deleteTodo($(this).data("id")) 
     console.log('Begon!',$(this).data("id"))
   }
-
+// DELETE function⬇
   function deleteTodo(todoId){
       console.log(todoId);
       $.ajax({
